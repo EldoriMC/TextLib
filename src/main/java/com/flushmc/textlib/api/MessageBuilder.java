@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 public class MessageBuilder {
 
     private TextComponent finalComponent, component;
+    private boolean append;
 
     public MessageBuilder() {
         this.finalComponent = new TextComponent("");
@@ -21,12 +22,34 @@ public class MessageBuilder {
         return new MessageBuilder();
     }
 
+    public MessageBuilder append(MessageBuilder builder) {
+        return append(builder.build());
+    }
+
+    public MessageBuilder append(TextComponent component) {
+        if (!append) {
+            this.component = component;
+        }
+        append = true;
+        return this;
+    }
+
     public MessageBuilder space() {
         if (component != null) {
             finalComponent.addExtra(component);
         }
         finalComponent.addExtra(" ");
         component = null;
+        append = false;
+        return this;
+    }
+
+    public MessageBuilder n() {
+        if (component != null) {
+            finalComponent.addExtra(component);
+        }
+        component = null;
+        append = false;
         return this;
     }
 
@@ -34,7 +57,14 @@ public class MessageBuilder {
         if (component != null) {
             finalComponent.addExtra(component);
         }
-        component = new TextComponent(ChatColor.translateAlternateColorCodes('&', text));
+        component = new TextComponent(text);
+        return this;
+    }
+
+    public MessageBuilder bold() {
+        if (component != null) {
+            component.setBold(true);
+        }
         return this;
     }
 
@@ -54,7 +84,8 @@ public class MessageBuilder {
                 String color = hexString.substring(matcher.start(), matcher.end());
                 component.setColor(ChatColor.of(color));
             }
-        } catch (Exception ex) {}
+        } catch (Exception ex) {
+        }
         return this;
     }
 
@@ -82,6 +113,7 @@ public class MessageBuilder {
     public TextComponent build() {
         if (component != null) {
             finalComponent.addExtra(component);
+            component = null;
         }
         return finalComponent;
     }
