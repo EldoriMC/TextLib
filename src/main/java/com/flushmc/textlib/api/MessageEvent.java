@@ -5,6 +5,7 @@ import com.flushmc.textlib.api.enums.HoverAction;
 import com.flushmc.textlib.shared.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
+import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
@@ -38,10 +39,18 @@ public class MessageEvent {
 
     public HoverEvent getHoverEvent() {
         if (hoverAction == null || (itemStack == null && hoverText == null)) return null;
-        return new HoverEvent(
-                hoverAction.getAction(),
-                new ComponentBuilder(itemStack == null ? hoverText : convertItemStackToString(itemStack)).create()
-        );
+        if (itemStack == null) {
+            return new HoverEvent(
+                    hoverAction.getAction(),
+                    new ComponentBuilder(hoverText).create()
+            );
+        } else {
+            var json = convertItemStackToString(itemStack);
+            return new HoverEvent(
+                    hoverAction.getAction(),
+                    new ComponentBuilder(json).create()
+            );
+        }
     }
 
     private String convertItemStackToString(ItemStack itemStack) {

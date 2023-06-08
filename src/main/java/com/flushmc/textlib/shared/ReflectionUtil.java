@@ -8,32 +8,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class ReflectionUtil {
 
-    /*
-     * The server version string to location NMS & OBC classes
-     */
     private static String versionString;
-
-    /*
-     * Cache of NMS classes that we've searched for
-     */
     private static Map<String, Class<?>> loadedNMSClasses = new HashMap<>();
-
-    /*
-     * Cache of OBS classes that we've searched for
-     */
     private static Map<String, Class<?>> loadedOBCClasses = new HashMap<>();
-
-    /*
-     * Cache of methods that we've found in particular classes
-     */
     private static Map<Class<?>, Map<String, Method>> loadedMethods = new HashMap<>();
-
-    /*
-     * Cache of fields that we've found in particular classes
-     */
     private static Map<Class<?>, Map<String, Field>> loadedFields = new HashMap<>();
 
     /**
@@ -48,6 +30,22 @@ public class ReflectionUtil {
         }
 
         return versionString;
+    }
+
+    public static int getVersionNumber() {
+
+        var versionString = new StringBuilder();
+
+        var pattern = Pattern.compile("[0-9]+");
+        var matcher = pattern.matcher(getVersion());
+
+        while (matcher.find()) versionString.append(matcher.group());
+
+        if (versionString.length() == 3) {
+            return Integer.parseInt(versionString.substring(0, 2));
+        } else {
+            return Integer.parseInt(versionString.substring(0, 3));
+        }
     }
 
     /**
